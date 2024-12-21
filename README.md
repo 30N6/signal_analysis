@@ -1,3 +1,100 @@
+# ARSR-4: Analysis of PDWs collected with pluto_esm
+<img src="https://github.com/user-attachments/assets/87500873-1f59-4094-949e-ef7e03e506f0" width=20%>
+<img src="https://github.com/user-attachments/assets/b6028ff0-afa0-477d-b4ee-cabb6d7d1f61" width=20%>
+<img src="https://github.com/user-attachments/assets/43c5481e-17f0-4b02-97e4-dc6e5a06f665" width=20%>
+<img src="https://github.com/user-attachments/assets/e69f4263-4187-4631-bfbe-59684714dd6d" width=20%>
+
+## Introduction
+This report presents a brief analysis of the ARSR-4 radar, based on PDWs collected with the pluto_esm open-source ESM receiver. Basic radar interpulse and intrapulse parameters are examined, including the amplitude/scan pattern, pulse duration, PRI, and modulation.
+
+## Pluto_esm
+The pluto_esm platform is an open-source implementation of a narrowband, channelized ESM receiver based on the ADALM-PLUTO evaluation board combined with Python software. 
+
+On the hardware side, the FPGA is loaded with a modified ADALM-PLUTO image, where custom ESM logic has been added. This includes a line-rate 64-channel channelizer, a multi-channel PDW encoder, a dwell controller, reporting logic, etc.
+
+The pluto_esm_app GUI controls the operation of the hardware, programming the FPGA with a frequency hopping program according to the user-specified scan configuration. For each hop/dwell, the FPGA reports channel statistics (accumulated and maximum power) for the 64 channelizer channels, and if desired, PDWs for any detected pulses. All reports are sent via DMA to the Linux OS running on the Zynq PS layer, where a small C program fetches them from memory and forwards the data to the USB-connected Ethernet adapter.
+
+<img src="https://github.com/user-attachments/assets/87617445-a41e-4e44-8132-8c5be44d5f16" width=75%>
+
+### Pluto_esm specifications
+| Parameter            | Value                      |
+|----------------------|:-----------:               |
+| Transceiver          | AD9363                     |
+| Tuning range         | 70-6000 MHz                | 
+| Instantaneous BW     | 56 MHz                     |
+| FPGA                 | XC7Z010                    |
+| Data link            | 100M Ethernet (emulated)   |
+| Channelizer channel count   | 64                  |
+| Channelizer spacing (~BW)   | 0.96 MHz            |
+| Channelizer sampling freq   | 1.92 MHz            |
+
+### Pluto_esm PDWs
+PDWs are stored by pluto_esm_app in json format. An example is described below:
+```{"time": [2024, 12, 18, 15, 58, 29, 2, 353, 0], "sec_frac": 0.6321597099304199,   # logging timestamp
+  "data": {
+    "msg_seq_num": 0,               # internal message sequence number
+    "msg_type": 32,                 # internal message type
+    "dwell_seq_num": 0,             # dwell sequence number
+    "pulse_seq_num": 7,             # per-channel pulse sequence number
+    "pulse_channel": 37,            # channelizer channel index
+    "pulse_threshold": 8,           # current threshold
+    "pulse_power_accum": 1292,      # pulse power (I^2 + Q^2) accumulator
+    "pulse_duration": 69,           # pulse duration, in channelizer channel cycles (1.92 MHz)
+    "pulse_frequency": 0,           # currently unused
+    "pulse_start_time": 320421454,  # pulse TOA, in system clock cycles (245.76 MHz, 4x the ADC sampling frequency)
+    "buffered_frame_index": 0,      # internal IQ capture index
+    "buffered_frame_valid": 1,      # IQ capture valid flag
+    "buffered_frame_data": [[1, -1], [0, -1], ... ],  # raw IQ data of the pulse: 8 samples before the trigger point, 40 samples after
+    "channel_frequency": 1252.8,    # channelizer channel frequency
+    "dwell_channel_entry": {        # channel statistics (spectrum analyzer)
+      "index": 37,                    # channelizer channel index
+      "accum": 236740,                # channel power accumulator (I^2 + Q^2)
+      "max": 102                      # channel power max value for the current dwell
+    },
+    "dwell_threshold_shift": 3,     # automatic threshold control setting
+    "modulation_data": {                      # modulation analysis performed by pluto_esm_app using the raw IQ data
+      "modulation_type": "FM",                  # frequency modulation - only LFM currently supported
+      "LFM_slope": -15918.92858875841,          # calculated LFM slope, Hz/us
+      "LFM_r_squared": 0.634858617417082,       # R^2 - goodness of fit of the calculated slope
+      "LFM_mean_residual": 54475.58927354079    # mean residual of the slope fit
+    }
+  }
+}
+```
+
+## Collection setup
+An ARSR-4
+```
+{
+    "sim_mode": {"enable": 0, "filename": ""},
+    "enable_recording": 0,
+    "analysis_config": {
+      "enable_pdw_recording": 1,
+      "modulation_threshold": 0.25,
+      "pulsed_emitter_search": {"expected_pulse_count": 0.1, "PW_range_scaling": [0.25, 1.25], "PRI_range_scaling": [0.75, 1.25]},
+      "modulation_analysis": {"FM_threshold_residual": 0.05, "FM_threshold_r_squared": 0.5, "FM_threshold_slope": 1000, "FM_min_samples": 8}
+    },
+    "fast_lock_config": {"recalibration_interval": 600.0, "recalibration_pause": 2.0},
+    "dwell_config": {"freq_start": 96.0, "freq_step": 48.0, "channel_step": 0.96},
+    "scan_config": {
+      "randomize_scan_order": 0,
+      "include_freqs": [
+          {"freq_range": [1250, 1255], "dwell_time": 0.31415926, "comment": "ARSR-4"},
+          {"freq_range": [1334, 1338], "dwell_time": 0.31415926, "comment": "ARSR-4"}
+      ],
+      "exclude_freqs": []
+    },
+    "emitter_config": {
+        "pulsed_emitters": [
+            {"name": "ARSR-4",  "freq_range": [1200, 1400], "PW_range": [60, 90],     "PRI_range": [1500, 14000], "priority": 2, "threshold_dB": 9}
+        ],
+        "cw_emitters": []
+    },
+    "pluto_dma_reader_path": "../pluto_dma_reader/pluto_dma_reader",
+    "pluto_credentials": {"username": "root", "password": "analog"},
+    "graphics": {"fullscreen": 0, "noframe": 0}
+}
+```
 
 
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_1.png)
