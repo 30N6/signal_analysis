@@ -1,4 +1,5 @@
-filename = 'analysis-20241218-155827-ARSR-4.log';
+filename = 'analysis-20241218-155827-ARSR-4.log'; pri_raster_period_us = 41666.954;
+%filename = 'analysis-20241219-202323-ARSR-4.log'; pri_raster_period_us = 41666.994;
 
 toa_scale_factor_s          = 1/(4*61.44e6);
 pd_scale_factor_us          = 1/1.92;
@@ -10,7 +11,6 @@ max_analysis_pri_single_us  = 10e3;
 
 pri_num_clusters            = 16;
 
-pri_raster_period_us        = 41666.954;
 pri_raster_offset_us        = 1000;
 pri_raster_num_clusters     = 12;
 pri_cluster_min_pulses      = 0.05;
@@ -229,14 +229,15 @@ for ii = 1:length(pulse_frequencies_filtered)
     linkaxes(ax(ii, :), 'xy');
     
     cluster_threshold = pri_cluster_min_pulses * length(pulse_toa_filt);
-
+    
+    figure(8);
     ax(ii, 2) = subplot(length(pulse_frequencies_filtered), 2, 2 + (ii-1) * 2);
     hold off;
     stem(cluster_median, cluster_count);
     hold on;
     plot([min(cluster_median), max(cluster_median)], [cluster_threshold, cluster_threshold], '--');
 
-    fprintf('PRI clustering: freq=%0.2f:\n', freq);
+    fprintf('PRI clustering, freq=%0.2f:\n', freq);
     for jj = 1:pri_num_clusters
         if cluster_count(jj) > pri_cluster_min_pulses * length(pulse_toa_filt)
             valid_str = 'valid';
@@ -246,10 +247,10 @@ for ii = 1:length(pulse_frequencies_filtered)
         fprintf('  %2d: median:%8.2f  N:%5d %s\n', jj, cluster_median(jj), cluster_count(jj), valid_str);
     end 
 
-    fprintf('PRI clustering: freq=%0.2f:\n', freq);
+    fprintf('PRI clustering, freq=%0.2f:\n', freq);
     for jj = 1:pri_num_clusters
         if cluster_count(jj) > pri_cluster_min_pulses * length(pulse_toa_filt)
-            fprintf('  %2d: median:%8.2f  N:%5d %s\n', jj, cluster_median(jj), cluster_count(jj), valid_str);
+            fprintf('  %2d: median:%8.2f  N:%5d\n', jj, cluster_median(jj), cluster_count(jj));
         end
     end     
 
@@ -331,7 +332,7 @@ ylabel('Count');
 title('PRI raster cluster counts');
 linkaxes([ax1, ax2], 'x');
 
-fprintf('Stagger pattern from raster:\n');
+fprintf('Stagger pattern from raster, freq=%.2f:\n', pri_analysis_freq);
 sorted_median = sort(cluster_median);
 pri_stagger = zeros(length(sorted_median), 1);
 for ii = 1:pri_raster_num_clusters
