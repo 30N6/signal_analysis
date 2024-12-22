@@ -43,7 +43,7 @@ PDWs are stored by pluto_esm_app in json format. An example is annotated below:
     "pulse_frequency": 0,           # currently unused
     "pulse_start_time": 320421454,  # pulse TOA, in system clock cycles (245.76 MHz, 4x the ADC sampling frequency)
     "buffered_frame_index": 0,      # internal IQ capture index
-    "buffered_frame_valid": 1,      # IQ capture valid flag
+    "buffered_frame_valid": 1,      # IQ capture valid flag (capture memory is very limited, and coverage degrades with increasing pulse density)
     "buffered_frame_data": [[1, -1], [0, -1], ... ],  # raw IQ data of the pulse: 8 samples before the trigger point, 40 samples after
     "channel_frequency": 1252.8,    # channelizer channel frequency
     "dwell_channel_entry": {        # channel statistics (spectrum analyzer)
@@ -63,9 +63,9 @@ PDWs are stored by pluto_esm_app in json format. An example is annotated below:
 ```
 
 ## Collection setup
-* ARSR-4 to receiver: R=17 mi, $$\epsilon$$=-2.5&deg;
-* Data collected using a vertically-polarized broadband (700-6000 MHz) antenna
-* To improve coverage, an emitter-specific config is used, which specifies a 314 ms dwell (not divisible by the PRI or scan time) near each of the two radar frequencies
+* ARSR-4 to receiver: R=17 mi, $$\epsilon$$=-2.5&deg;.
+* Data was collected using a vertically-polarized broadband (700-6000 MHz) antenna.
+* To improve coverage, an emitter-specific config is used, which specifies a 314 ms dwell (not divisible by the PRI or scan time) near each of the two radar frequencies.
 ```
 {
     "sim_mode": {"enable": 0, "filename": ""},
@@ -98,20 +98,26 @@ PDWs are stored by pluto_esm_app in json format. An example is annotated below:
 }
 ```
 ## Collection analysis
+* The `radar_analysis_ARSR_4.m` and `modulation_analysis.m` scripts are used to generate the plots and tables below.
+* `analysis-20241218-155827-ARSR-4.log` contains the collected PDWs.
+* MATLAB: R2023b
 
 ### Frequency
 * Pulses were detected in three channels, centered at 1252.80, 1253.76, and 1336.32 MHz.
 * Pulses are detected in the adjacent channels at 1252.80 and 1253.76 MHz due to FMOP (the frequency moving from one channel to another within the pulse).
+  
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_1.png)
 
 ### Pulse duration
 * The upper frequency exhibits a narrow peak near 59 us, while the lower two frequencies have broad peaks centered near 70 and 38 us.
 * The lower channels, being adjacent, have overlapping frequency frequency responses. Therefore, the total duration of the lower frequency pulse should be lower than 70+38 = 108 us.
 * Overall, the collected pulse durations are consistent with the values published in open literature: 60 us for the high frequency and 90 us for the low frequency.
+  
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_2.png)
 
 ### Scan
 * A 12 second scan period is clearly apparent.
+
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_3.png)
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_3_detail.png)
 
@@ -119,11 +125,17 @@ PDWs are stored by pluto_esm_app in json format. An example is annotated below:
 * The ARSR-4 uses a PRI stagger.
 * Computing a full PRI histogram (a histogram of the TOA differences between a given pulse and multiple subsequent pulses), we find a single prominent peak at the common stagger sum, around 41667 us.
 * As expected, the PRI pattern is the same between frequencies.
+
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_4.png)
+
 * With a first-level PRI histogram (TOA differences of adjacent pulses only), the stagger pattern is easier to see.
+
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_5.png)
+
 * Finally, we can identify the PRIs via automatic clustering.
+
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_9.png)
+
 * Applying a threshold to eliminate spurious values, we find that there are nine PRIs:
 ```
 PRI clustering, freq=1336.32:
@@ -139,8 +151,12 @@ PRI clustering, freq=1336.32:
 ```
 
 ### Raster/PRI stagger
+* Plotting the pulse TOAs in raster format (fast time vs slow time), the stagger pattern appears to be stable over time.
+* By automatically clustering the vertical traces, we find the exact stagger pattern, which consists of 12 PRIs.
+
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_10.png)
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_11.png)
+
 ```
 Stagger pattern from raster, freq=1336.32:
    1: PRI: 3337.03 us   PRF: 299.67 Hz
@@ -158,9 +174,15 @@ Stagger pattern from raster, freq=1336.32:
 ```
 
 ### Modulation
+* The ARSR-4 employs frequency modulation, and this is apparent in the raw IQ data provided with PDWs captured by pluto_esm.
+* The two plots below show some example IQ captures (at 1336.32 MHz), for high and low SNRs.
+* By computing the phase, unwrapping, diffing, and then fitting a line, the FM slope can be computed.
+
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_21.png)
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_22.png)
 
+* The pluto_esm software attempts to detect FMOP for each PDW IQ capture that it receives, using the technique described above.
+* From the summary statistics (again for 1336.32 MHz), we find a slope of roughly 20 kHz/us. This corresponds to a total excursion of roughly 1.2 MHz.
 ```
 >> modulation_analysis
 SNR > 30.0 dB:
