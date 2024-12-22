@@ -29,7 +29,7 @@ The pluto_esm_app GUI controls the operation of the hardware, programming the FP
 | Channelizer sampling freq   | 1.92 MHz            |
 
 ### Pluto_esm PDWs
-PDWs are stored by pluto_esm_app in json format. An example is described below:
+PDWs are stored by pluto_esm_app in json format. An example is annotated below:
 ```{"time": [2024, 12, 18, 15, 58, 29, 2, 353, 0], "sec_frac": 0.6321597099304199,   # logging timestamp
   "data": {
     "msg_seq_num": 0,               # internal message sequence number
@@ -63,7 +63,9 @@ PDWs are stored by pluto_esm_app in json format. An example is described below:
 ```
 
 ## Collection setup
-An ARSR-4
+* ARSR-4 to receiver: R=17 mi, $$\epsilon$$=-2.5&deg;
+* Data collected using a vertically-polarized broadband (700-6000 MHz) antenna
+* To improve coverage, an emitter-specific config is used, which specifies a 314 ms dwell (not divisible by the PRI or scan time) near each of the two radar frequencies
 ```
 {
     "sim_mode": {"enable": 0, "filename": ""},
@@ -95,20 +97,34 @@ An ARSR-4
     "graphics": {"fullscreen": 0, "noframe": 0}
 }
 ```
+## Collection analysis
 
-
+### Frequency
+* Pulses were detected in three channels, centered at 1252.80, 1253.76, and 1336.32 MHz.
+* Pulses are detected in the adjacent channels at 1252.80 and 1253.76 MHz due to FMOP (the frequency moving from one channel to another within the pulse).
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_1.png)
+
+### Pulse duration
+* The upper frequency exhibits a narrow peak near 59 us, while the lower two frequencies have broad peaks centered near 70 and 38 us.
+* The lower channels, being adjacent, have overlapping frequency frequency responses. Therefore, the total duration of the lower frequency pulse should be lower than 70+38 = 108 us.
+* Overall, the collected pulse durations are consistent with the values published in open literature: 60 us for the high frequency and 90 us for the low frequency.
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_2.png)
+
+### Scan
+* A 12 second scan period is clearly apparent.
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_3.png)
 ![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_3_detail.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_4.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_5.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_9.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_10.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_11.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_21.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_22.png)
 
+### PRI
+* The ARSR-4 uses a PRI stagger.
+* Computing a full PRI histogram (a histogram of the TOA differences between a given pulse and multiple subsequent pulses), we find a single prominent peak at the common stagger sum, around 41667 us.
+* As expected, the PRI pattern is the same between frequencies.
+![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_4.png)
+* With a first-level PRI histogram (TOA differences of adjacent pulses only), the stagger pattern is easier to see.
+![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_5.png)
+* Finally, we can identify the PRIs via automatic clustering.
+![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_9.png)
+* Applying a threshold to eliminate spurious values, we find that there are nine PRIs:
 ```
 PRI clustering, freq=1336.32:
    1: median: 1957.29  N: 3272
@@ -120,7 +136,12 @@ PRI clustering, freq=1336.32:
   11: median: 2839.58  N: 3240
   12: median: 4540.10  N: 3562
   13: median: 3891.15  N: 3605
+```
 
+### Raster/PRI stagger
+![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_10.png)
+![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_11.png)
+```
 Stagger pattern from raster, freq=1336.32:
    1: PRI: 3337.03 us   PRF: 299.67 Hz
    2: PRI: 2382.05 us   PRF: 419.81 Hz
@@ -135,6 +156,10 @@ Stagger pattern from raster, freq=1336.32:
   11: PRI: 3604.05 us   PRF: 277.47 Hz
   12: PRI: 4540.30 us   PRF: 220.25 Hz
 ```
+
+### Modulation
+![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_21.png)
+![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_22.png)
 
 ```
 >> modulation_analysis
