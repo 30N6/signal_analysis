@@ -106,35 +106,35 @@ PDWs are stored by pluto_esm_app in json format. An example is annotated below:
 * Pulses were detected in three channels, centered at 1252.80, 1253.76, and 1336.32 MHz.
 * Pulses are detected in the adjacent channels at 1252.80 and 1253.76 MHz due to FMOP (the frequency moving from one channel to another within the pulse).
   
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_1.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_1.png)
 
 ### Pulse duration
 * The upper frequency exhibits a narrow peak near 59 us, while the lower two frequencies have broad peaks centered near 70 and 38 us.
 * The lower channels, being adjacent, have overlapping frequency frequency responses. Therefore, the total duration of the lower frequency pulse should be lower than 70+38 = 108 us.
 * Overall, the collected pulse durations are consistent with the values published in open literature: 60 us for the high frequency and 90 us for the low frequency.
   
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_2.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_2.png)
 
 ### Scan
 * A 12 second scan period is clearly apparent.
 
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_3.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_3_detail.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_3.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_3_detail.png)
 
 ### PRI
 * The ARSR-4 uses a PRI stagger.
 * Computing a full PRI histogram (a histogram of the TOA differences between a given pulse and multiple subsequent pulses), we find a single prominent peak at the common stagger sum, around 41667 us.
 * As expected, the PRI pattern is the same between frequencies.
 
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_4.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_4.png)
 
 * With a first-level PRI histogram (TOA differences of adjacent pulses only), the stagger pattern is easier to see.
 
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_5.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_5.png)
 
 * Finally, we can identify the PRIs via automatic clustering.
 
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_9.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_9.png)
 
 * Applying a threshold to eliminate spurious values, we find that there are nine PRIs:
 ```
@@ -154,8 +154,8 @@ PRI clustering, freq=1336.32:
 * Plotting the pulse TOAs in raster format (fast time vs slow time), the stagger pattern appears to be stable over time.
 * By automatically clustering the vertical traces, we find the exact stagger pattern, which consists of 12 PRIs.
 
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_10.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_11.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_10.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_11.png)
 
 ```
 Stagger pattern from raster, freq=1336.32:
@@ -178,8 +178,8 @@ Stagger pattern from raster, freq=1336.32:
 * The two plots below show some example IQ captures (at 1336.32 MHz), for high and low SNRs.
 * By computing the phase, unwrapping, diffing, and then fitting a line, the FM slope can be computed.
 
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_21.png)
-![image](https://github.com/30N6/radar_analysis/blob/master/ARSR_4/analysis-20241218-155827-ARSR-4_fig_22.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_21.png)
+![image](./analysis-20241218-155827-ARSR-4_fig_22.png)
 
 * The pluto_esm software attempts to detect FMOP for each PDW IQ capture that it receives, using the technique described above.
 * From the summary statistics (again for 1336.32 MHz), we find a slope of roughly 20 kHz/us. This corresponds to a total excursion of roughly 1.2 MHz.
