@@ -17,7 +17,7 @@ pri_num_clusters            = 16;
 
 pri_raster_offset_us        = 1000;
 pri_raster_num_clusters     = 12;
-pri_cluster_min_pulses      = 0.02;
+pri_cluster_min_pulses      = 0.01;
 
 analysis_freq               = 2893.44;
 
@@ -250,6 +250,9 @@ for ii = 1:length(pulse_frequencies_filtered)
     
     cluster_threshold = pri_cluster_min_pulses * length(pulse_toa_filt);
     
+    [cluster_median, sorted_i] = sort(cluster_median);
+    cluster_count = cluster_count(sorted_i);
+
     figure(8);
     ax(ii, 2) = subplot(length(pulse_frequencies_filtered), 2, 2 + (ii-1) * 2);
     hold off;
@@ -297,10 +300,7 @@ for ii = 1:length(pulse_frequencies_filtered)
 end
 
 %% PRI raster
-%pri_raster_period_us = 1093.3258
-%pri_raster_period_us = 3139.970
-%pri_raster_period_us = 1686.4
-pri_raster_period_us = [1093.326, 3139.970, 1686.3, 2866.606];
+pri_raster_period_us = [1093.326, 1686.3, 1966.67, 2866.606, 3139.970];
 
 for ii = 1:length(pri_raster_period_us)
     raster_period = pri_raster_period_us(ii);
@@ -318,10 +318,8 @@ for ii = 1:length(pri_raster_period_us)
     title(sprintf('PRI raster: freq=%0.2f MHz, period=%0.2f us', analysis_freq, raster_period));
 end
 
-
-
 %%
-figs_to_save = [1, 2, 3, 6, 7, 9, 10, 11, 12, 13];
+figs_to_save = [1, 2, 3, 6, 7, 9, 10, 11, 12, 13, 14];
 split_fn = split(filename, '.');
 filename_base = split_fn{1};
 
