@@ -136,44 +136,30 @@ PRI clustering, freq=2893.44:
    2: median: 1093.23  N:67683
    3: median: 1686.46  N: 2485
    4: median: 1966.67  N: 1490
-   5: median: 2186.46  N: 1357
+   5: median: 2186.46  N: 1357  * subharmonic of 1093.23
    9: median: 2866.67  N: 2828
   11: median: 3140.10  N: 9505
 ```
 
 ### Raster
 * Because the PRI pattern changes over time, a single raster plot of the TOA is insufficient.
-* 
-
+* The 1093 us PRI appears in several ~20 second long segments exclusively, as well as mixed with other PRIs at times.
 ![image](./analysis-20241225-161037_fig_10.png)
+![image](./analysis-20241225-161037_fig_10_detail_1.png)
+* The 1686 us PRI is always mixed with other PRIs, appearing mostly (entirely?) in bursts of 7 pulses at a time.
 ![image](./analysis-20241225-161037_fig_11.png)
+![image](./analysis-20241225-161037_fig_11_detail_1.png)
+* The 1967 us PRI is also always mixed with other PRIs and appears mostly (entirely?) in bursts of 7 pulses at a time.
 ![image](./analysis-20241225-161037_fig_12.png)
+* The 2867 us PRI appears exclusively and only during a ~25 second long segment.
 ![image](./analysis-20241225-161037_fig_13.png)
+* The 3140 us PRI appears exclusively and only during several ~25 second long segments.
 ![image](./analysis-20241225-161037_fig_14.png)
 
 ### Modulation
-* The ARSR-4 employs frequency modulation, and this is apparent in the raw IQ data provided with PDWs captured by pluto_esm.
-* The two plots below show some example IQ captures (at 1336.32 MHz), for high and low SNRs.
-* By computing the phase, unwrapping, diffing, and then fitting a line, the FM slope can be computed.
-
-![image](./analysis-20241218-155827-ARSR-4_fig_21.png)
-![image](./analysis-20241218-155827-ARSR-4_fig_22.png)
-
-* The pluto_esm software attempts to detect FMOP for each PDW IQ capture that it receives, using the technique described above.
-* From the summary statistics (again for 1336.32 MHz), we find a slope of roughly 20 kHz/us. This corresponds to a total excursion of roughly 1.2 MHz.
-```
->> modulation_analysis
-SNR > 30.0 dB:
-example [1]: normr= 2520.4  r_squared=0.983  snr= 43.4  44.2 -- slope: -20161.6
-example [2]: normr= 3935.3  r_squared=0.957  snr= 58.5  77.3 -- slope: -19892.0
-example [3]: normr= 3070.1  r_squared=0.974  snr= 88.3  61.2 -- slope: -20111.7
-example [4]: normr= 3922.7  r_squared=0.957  snr=114.5 130.0 -- slope: -19827.4
-Hardware detection summary: num_pulses=1920  num_detected_FM=1920 (100.0%)  mean_r_squared=0.972 mean_slope=-20307.1 mean_residual=10699.4
-
-SNR < 15.0 dB:
-example [1]: normr= 6955.5  r_squared=0.860  snr=  3.2   3.4 -- slope: -18337.1
-example [2]: normr= 8001.2  r_squared=0.802  snr=  2.4   1.4 -- slope: -17179.3
-example [3]: normr= 8647.9  r_squared=0.841  snr=  2.6   8.0 -- slope: -21209.2
-example [4]: normr=12752.5  r_squared=0.707  snr=  1.5   4.2 -- slope: -21109.1
-Hardware detection summary: num_pulses=4106  num_detected_FM=4105 (100.0%)  mean_r_squared=0.806 mean_slope=-19975.4 mean_residual=44907.4
-```
+* No intrapulse modulation is apparent in the data. However, given the small pulse duration relative to the channelizer sampling period (3 cycles for a 1.6 us pulse), it would be difficult to detect in the IQ data anyway.
+* IQ captures for some high (>30) and low (<15) SNR example pulses are shown below.
+* The IQ plots start eight samples prior to the trigger point, and stop when the pulse is no longer detected.
+* For the high SNR case, the duration of the sample pulses is significantly stretched (such cases are seemingly rare). It is unclear whether this occurs due to some behavior of pluto_esm (most likely), or is inherent to the radar itself.
+![image](./analysis-20241225-161037_fig_21.png)
+![image](./analysis-20241225-161037_fig_22.png)
