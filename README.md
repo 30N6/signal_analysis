@@ -12,6 +12,6 @@
 <img src="https://github.com/user-attachments/assets/36416070-2957-44a5-a75b-3e01404b18e7" width=20%>
 <img src="https://github.com/user-attachments/assets/8abfb872-37f5-4b53-b608-e43339b2056d" width=20%>
 
-## pluto_esm
+## Pluto_esm: an open-source ESM receiver
 <img src="https://github.com/user-attachments/assets/87617445-a41e-4e44-8132-8c5be44d5f16" width=40%>
 <img src="https://github.com/user-attachments/assets/d0ac3922-13c4-487f-83c4-249cbce1c41d" width=40%>
