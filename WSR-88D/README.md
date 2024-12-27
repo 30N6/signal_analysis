@@ -103,75 +103,53 @@ PDWs are stored by pluto_esm_app in json format. An example is annotated below:
 * MATLAB: R2023b
 
 ### Frequency
-* Pulses were detected in three channels, centered at 1252.80, 1253.76, and 1336.32 MHz.
-* Pulses are detected in the adjacent channels at 1252.80 and 1253.76 MHz due to FMOP (the frequency moving from one channel to another within the pulse).
-  
-![image](./analysis-20241218-155827-ARSR-4_fig_1.png)
+* The emitter appears in several channels, centered around 2893.44 MHz. The spillover into the nearby channels is likely unintentional, a byproduct of the non-ideal channelizer filter response in conjunction with a relatively dirty signal.
+![image](./analysis-20241225-161037_fig_1.png)
 
 ### Pulse duration
-* The upper frequency exhibits a narrow peak near 59 us, while the lower two frequencies have broad peaks centered near 70 and 38 us.
-* The lower channels, being adjacent, have overlapping frequency frequency responses. Therefore, the total duration of the lower frequency pulse should be lower than 70+38 = 108 us.
-* Overall, the collected pulse durations are consistent with the values published in open literature: 60 us for the high frequency and 90 us for the low frequency.
-  
-![image](./analysis-20241218-155827-ARSR-4_fig_2.png)
+* For the center channel, the median pulse duration is 1.6 us, consistent with the lower end of the published range for the WSR-88D. 
+![image](./analysis-20241225-161037_fig_2.png)
 
 ### Scan
-* A 12 second scan period is clearly apparent.
-
-![image](./analysis-20241218-155827-ARSR-4_fig_3.png)
-![image](./analysis-20241218-155827-ARSR-4_fig_3_detail.png)
+* A scan pattern is visible, but the period is not uniform, ranging from 17 to 34 seconds.
+* The azimuth scan period is assumed to vary for different elevations. For VCP 215, the full sequence is known to take roughly six minutes.
+![image](./analysis-20241225-161037_fig_3.png)
+![image](./analysis-20241225-161037_fig_3_detail_1.png)
+![image](./analysis-20241225-161037_fig_3_detail_2.png)
 
 ### PRI
-* The ARSR-4 uses a PRI stagger.
-* Computing a full PRI histogram (a histogram of the TOA differences between a given pulse and multiple subsequent pulses), we find a single prominent peak at the common stagger sum, around 41667 us.
-* As expected, the PRI pattern is the same between frequencies.
+* The PRI behavior of the WSR-88D is relatively complex.
+* In a full PRI histogram (a histogram of the TOA differences between a given pulse and multiple subsequent pulses), there is no large peak indicative of a common sum of a stagger sequence.
+![image](./analysis-20241225-161037_fig_6.png)
 
-![image](./analysis-20241218-155827-ARSR-4_fig_4.png)
+* With a first-level PRI histogram (TOA differences of adjacent pulses only), there are two prominent peaks and multiple smaller ones which cannot be attributed to noise or subharmonics.
 
-* With a first-level PRI histogram (TOA differences of adjacent pulses only), the stagger pattern is easier to see.
+![image](./analysis-20241225-161037_fig_7.png)
 
-![image](./analysis-20241218-155827-ARSR-4_fig_5.png)
+* The TOA difference vs time plot exhibits PRI/mode switching, with certain PRIs appearing or vanishing over large intervals of time. To identify the specific PRI values, automatic clustering is used.
 
-* Finally, we can identify the PRIs via automatic clustering.
+![image](./analysis-20241225-161037_fig_9.png)
 
-![image](./analysis-20241218-155827-ARSR-4_fig_9.png)
-
-* Applying a threshold to eliminate spurious values, we find that there are nine PRIs:
+* With a 1% threshold, we have six PRIs:
 ```
-PRI clustering, freq=1336.32:
-   1: median: 1957.29  N: 3272
-   3: median: 3336.98  N:13396
-   5: median: 4203.65  N: 3628
-   6: median: 4901.56  N: 3557
-   8: median: 2382.29  N: 3206
-   9: median: 3604.17  N: 3577
-  11: median: 2839.58  N: 3240
-  12: median: 4540.10  N: 3562
-  13: median: 3891.15  N: 3605
+PRI clustering, freq=2893.44:
+   2: median: 1093.23  N:67683
+   3: median: 1686.46  N: 2485
+   4: median: 1966.67  N: 1490
+   5: median: 2186.46  N: 1357
+   9: median: 2866.67  N: 2828
+  11: median: 3140.10  N: 9505
 ```
 
-### Raster/PRI stagger
-* Plotting the pulse TOAs in raster format (fast time vs slow time), the stagger pattern appears to be stable over time.
-* By automatically clustering the vertical traces, we find the exact stagger pattern, which consists of 12 PRIs.
+### Raster
+* Because the PRI pattern changes over time, a single raster plot of the TOA is insufficient.
+* 
 
-![image](./analysis-20241218-155827-ARSR-4_fig_10.png)
-![image](./analysis-20241218-155827-ARSR-4_fig_11.png)
-
-```
-Stagger pattern from raster, freq=1336.32:
-   1: PRI: 3337.03 us   PRF: 299.67 Hz
-   2: PRI: 2382.05 us   PRF: 419.81 Hz
-   3: PRI: 3891.40 us   PRF: 256.98 Hz
-   4: PRI: 4203.45 us   PRF: 237.90 Hz
-   5: PRI: 3336.61 us   PRF: 299.71 Hz
-   6: PRI: 2839.61 us   PRF: 352.16 Hz
-   7: PRI: 3336.90 us   PRF: 299.68 Hz
-   8: PRI: 4901.66 us   PRF: 204.01 Hz
-   9: PRI: 3337.08 us   PRF: 299.66 Hz
-  10: PRI: 1956.84 us   PRF: 511.03 Hz
-  11: PRI: 3604.05 us   PRF: 277.47 Hz
-  12: PRI: 4540.30 us   PRF: 220.25 Hz
-```
+![image](./analysis-20241225-161037_fig_10.png)
+![image](./analysis-20241225-161037_fig_11.png)
+![image](./analysis-20241225-161037_fig_12.png)
+![image](./analysis-20241225-161037_fig_13.png)
+![image](./analysis-20241225-161037_fig_14.png)
 
 ### Modulation
 * The ARSR-4 employs frequency modulation, and this is apparent in the raw IQ data provided with PDWs captured by pluto_esm.
