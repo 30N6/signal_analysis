@@ -345,6 +345,9 @@ for ii = 1:pri_raster_num_clusters
     fprintf('  %2d: PRI: %0.2f us   PRF: %0.2f Hz\n', ii, current_pri, 1/(current_pri * 1e-6));
 end
 
+%%
+disp('Pausing for figure adjustments');
+pause();
 
 %% 
 figs_to_save = [1, 2, 3, 4, 5, 9, 10, 11];
@@ -360,9 +363,6 @@ for ii = 1:length(figs_to_save)
     saveas(f, fig_filename);
 end
 
-%%
-disp('Pausing for figure adjustments');
-pause();
 %%
 function td = get_toa_diff_single_dwell(toa, N_diffs)
     td = [];

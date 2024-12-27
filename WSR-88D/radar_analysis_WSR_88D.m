@@ -1,24 +1,27 @@
-%filename = 'analysis-20241225-161037.log'; pri_raster_period_us = 1093.326;
-filename = 'analysis-20241225-124611.log'; pri_raster_period_us = 1093.326;
-
+%filename = 'analysis-20241225-124611.log'; pri_raster_period_us = 1093.326;
+%filename = 'analysis-20241225-124346.log';
+%filename = 'analysis-20241225-155155.log'; %long
+%filename = 'analysis-20241225-160244.log';
+%filename = 'analysis-20241225-160848.log';
+filename = 'analysis-20241225-161037.log'; pri_raster_period_us = [1093.326, 3139.970, 1686.4];
 
 toa_scale_factor_s          = 1/(4*61.44e6);
 pd_scale_factor_us          = 1/1.92;
 channel_spacing             = 0.96;
 min_pulses_per_freq         = 1000;
 max_toa_diff_levels         = 12;
-max_analysis_pri_full_us    = 50e3;
-max_analysis_pri_single_us  = 10e3;
+max_analysis_pri_full_us    = 25e3;
+max_analysis_pri_single_us  = 5e3;
 
 pri_num_clusters            = 16;
 
 pri_raster_offset_us        = 1000;
 pri_raster_num_clusters     = 12;
-pri_cluster_min_pulses      = 0.05;
+pri_cluster_min_pulses      = 0.02;
 
 analysis_freq               = 2893.44;
 
-reload = 1;
+reload = 0;
 if reload
     lines = readlines(filename);
     pdw_reports = [];
@@ -176,7 +179,22 @@ for ii = 1:length(pulse_frequencies_filtered)
     xlabel('PRI (us)');
     ylabel('Count');
     title(sprintf('First-level PRI histogram: %0.2f MHz', freq));    
-
+    
+    if freq == analysis_freq
+        figure(6);
+        histogram(filtered_pulse_toa_diff_full, 1000);
+        grid on;
+        xlabel('PRI (us)');
+        ylabel('Count');
+        title(sprintf('Full PRI histogram: %0.2f MHz', freq));
+    
+        figure(7);
+        histogram(filtered_pulse_toa_diff_single, 1000);    
+        grid on;
+        xlabel('PRI (us)');
+        ylabel('Count');
+        title(sprintf('First-level PRI histogram: %0.2f MHz', freq));    
+    end
     % figure(6);
     % ax(ii, 3) = subplot(length(pulse_frequencies_filtered), 1, ii);
     % toa_all = [reports.pulse_toa_s] / 1e-6;
@@ -279,32 +297,31 @@ for ii = 1:length(pulse_frequencies_filtered)
 end
 
 %% PRI raster
-pri_raster_period_us = 1093.3258
+%pri_raster_period_us = 1093.3258
 %pri_raster_period_us = 3139.970
 %pri_raster_period_us = 1686.4
+pri_raster_period_us = [1093.326, 3139.970, 1686.3, 2866.606];
 
-
-figure(10);
-hold off;
-for ii = 1:length(pulse_frequencies_filtered)
-    freq = pulse_frequencies_filtered(ii);
-    reports = pdw_reports_by_freq{freq};
+for ii = 1:length(pri_raster_period_us)
+    raster_period = pri_raster_period_us(ii);
+    reports = pdw_reports_by_freq{analysis_freq};
     pulse_toa_us = [reports.pulse_toa_s] / 1e-6 + pri_raster_offset_us;
     
-    toa_x = mod(pulse_toa_us, pri_raster_period_us);
-    toa_y = floor(pulse_toa_us / pri_raster_period_us) * pri_raster_period_us * 1e-6;
+    toa_x = mod(pulse_toa_us, raster_period);
+    toa_y = floor(pulse_toa_us / raster_period) * raster_period * 1e-6;
+    
+    figure(10 + ii - 1);
     plot(toa_x, toa_y, 'o');
-    hold on;
+    grid on;
+    xlabel('Fast time (us)');
+    ylabel('Slow time (s)');
+    title(sprintf('PRI raster: freq=%0.2f MHz, period=%0.2f us', analysis_freq, raster_period));
 end
-grid on;
-xlabel('Fast time (us)');
-ylabel('Slow time (s)');
-title(sprintf('PRI raster: period=%0.2f us', pri_raster_period_us));
-legend(freq_legend);
 
 
-%% 
-figs_to_save = [1, 2, 3, 4, 5, 9, 10, 11];
+
+%%
+figs_to_save = [1, 2, 3, 6, 7, 9, 10, 11, 12, 13];
 split_fn = split(filename, '.');
 filename_base = split_fn{1};
 
@@ -312,14 +329,18 @@ for ii = 1:length(figs_to_save)
     fig_index = figs_to_save(ii);
     f = figure(fig_index);
     f.Position = [1400 100 800 500];
-    
+end
+
+disp('Pausing for figure adjustments');
+pause();
+
+for ii = 1:length(figs_to_save)
+    fig_index = figs_to_save(ii);
+    f = figure(fig_index);    
     fig_filename = sprintf('%s_fig_%d.png', filename_base, fig_index);
     saveas(f, fig_filename);
 end
 
-%%
-disp('Pausing for figure adjustments');
-pause();
 %%
 function td = get_toa_diff_single_dwell(toa, N_diffs)
     td = [];
