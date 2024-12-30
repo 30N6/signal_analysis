@@ -186,16 +186,16 @@ Stagger pattern from raster, freq=1336.32:
 ```
 >> modulation_analysis
 SNR > 30.0 dB:
-example [1]: normr= 2520.4  r_squared=0.983  snr= 43.4  44.2 -- slope: -20161.6
-example [2]: normr= 3935.3  r_squared=0.957  snr= 58.5  77.3 -- slope: -19892.0
-example [3]: normr= 3070.1  r_squared=0.974  snr= 88.3  61.2 -- slope: -20111.7
-example [4]: normr= 3922.7  r_squared=0.957  snr=114.5 130.0 -- slope: -19827.4
-Hardware detection summary: num_pulses=1920  num_detected_FM=1920 (100.0%)  mean_r_squared=0.972 mean_slope=-20307.1 mean_residual=10699.4
+example [1]: normr= 2520.4  r_squared=0.983  snr= 43.4  44.2 -- slope: 20161.6
+example [2]: normr= 3935.3  r_squared=0.957  snr= 58.5  77.3 -- slope: 19892.0
+example [3]: normr= 3070.1  r_squared=0.974  snr= 88.3  61.2 -- slope: 20111.7
+example [4]: normr= 3922.7  r_squared=0.957  snr=114.5 130.0 -- slope: 19827.4
+Hardware detection summary: num_pulses=1920  num_detected_FM=1920 (100.0%)  mean_r_squared=0.972 mean_slope=20307.1 mean_residual=10699.4
 
 SNR < 15.0 dB:
-example [1]: normr= 6955.5  r_squared=0.860  snr=  3.2   3.4 -- slope: -18337.1
-example [2]: normr= 8001.2  r_squared=0.802  snr=  2.4   1.4 -- slope: -17179.3
-example [3]: normr= 8647.9  r_squared=0.841  snr=  2.6   8.0 -- slope: -21209.2
-example [4]: normr=12752.5  r_squared=0.707  snr=  1.5   4.2 -- slope: -21109.1
-Hardware detection summary: num_pulses=4106  num_detected_FM=4105 (100.0%)  mean_r_squared=0.806 mean_slope=-19975.4 mean_residual=44907.4
+example [1]: normr= 6955.5  r_squared=0.860  snr=  3.2   3.4 -- slope: 18337.1
+example [2]: normr= 8001.2  r_squared=0.802  snr=  2.4   1.4 -- slope: 17179.3
+example [3]: normr= 8647.9  r_squared=0.841  snr=  2.6   8.0 -- slope: 21209.2
+example [4]: normr=12752.5  r_squared=0.707  snr=  1.5   4.2 -- slope: 21109.1
+Hardware detection summary: num_pulses=4106  num_detected_FM=4105 (100.0%)  mean_r_squared=0.806 mean_slope=19975.4 mean_residual=44907.4
 ```
