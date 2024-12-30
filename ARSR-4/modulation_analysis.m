@@ -84,7 +84,7 @@ for jj = 1:length(pdws_by_snr)
         if strcmp(pdw.modulation_data.modulation_type, 'FM')
             num_detected_FM = num_detected_FM + 1;
             sum_r_squared   = sum_r_squared + pdw.modulation_data.LFM_r_squared;
-            sum_slope       = sum_slope + pdw.modulation_data.LFM_slope;
+            sum_slope       = sum_slope + pdw.modulation_data.LFM_slope * -1; %2024-12-29: old version had I and Q swapped
             sum_residual    = sum_residual + pdw.modulation_data.LFM_mean_residual;
         end
     end

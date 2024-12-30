@@ -54,7 +54,7 @@ if reload
         pdw_reports(ii).pulse_toa_s             = pdw_reports(ii).pulse_start_time * toa_scale_factor_s - toa_0;
         pdw_reports(ii).pulse_duration_us       = pdw_reports(ii).pulse_duration * pd_scale_factor_us;
 
-        pdw_reports(ii).recorded_iq_data        = pdw_reports(ii).buffered_frame_data(:, 1) + pdw_reports(ii).buffered_frame_data(:, 2) * 1j;
+        pdw_reports(ii).recorded_iq_data        = 1j * pdw_reports(ii).buffered_frame_data(:, 1) + pdw_reports(ii).buffered_frame_data(:, 2);
         pdw_reports(ii).recorded_power          = abs(pdw_reports(ii).recorded_iq_data) .^ 2;
         pdw_reports(ii).recorded_noise_power    = mean(pdw_reports(ii).recorded_power(1:8));
     
