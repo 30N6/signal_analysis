@@ -12,6 +12,8 @@
 <img src="https://github.com/user-attachments/assets/36416070-2957-44a5-a75b-3e01404b18e7" width=20%>
 <img src="https://github.com/user-attachments/assets/8abfb872-37f5-4b53-b608-e43339b2056d" width=20%>
 
-## Pluto_esm: an open-source ESM receiver
-<img src="https://github.com/user-attachments/assets/87617445-a41e-4e44-8132-8c5be44d5f16" width=40%>
-<img src="https://github.com/user-attachments/assets/d0ac3922-13c4-487f-83c4-249cbce1c41d" width=40%>
+## [Collection platform: pluto_esm, an open-source FPGA-based ESM receiver](https://github.com/30N6/sw/tree/master/pluto_esm_app)
+<img src="https://github.com/user-attachments/assets/87617445-a41e-4e44-8132-8c5be44d5f16" height=160>
+<img src="https://github.com/user-attachments/assets/d0ac3922-13c4-487f-83c4-249cbce1c41d" height=160>
+<img src="https://github.com/user-attachments/assets/4105dea9-10d2-430d-ae92-12c65efdd28f" height=160>
+<img src="https://github.com/user-attachments/assets/ed1026f0-7e05-4d16-839d-c16b8350461e" height=160>
