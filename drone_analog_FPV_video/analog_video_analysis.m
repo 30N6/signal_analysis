@@ -1,5 +1,5 @@
 %filename = 'analysis-20250118-135026-5917-20mW-250ms.log'; pri_raster_period_us = 33365.4; min_pulses_per_freq = 5000;
-filename = 'analysis-20250118-143522-5917-20mW-10ms.log'; pri_raster_period_us = 33365.4; min_pulses_per_freq = 2000;
+filename = 'analysis-20250118-143522-5917-20mW-10ms.log'; pri_raster_period_us = 33365.8; min_pulses_per_freq = 2000;
 
 toa_scale_factor_s          = 1/(4*61.44e6);
 pd_scale_factor_us          = 1/1.92;
@@ -20,7 +20,7 @@ pri_analysis_freq           = 5918.4;
 
 filter_freq_range = [5900, 6000];
 
-reload = 1;
+reload = 0;
 if reload
     lines = readlines(filename);
     pdw_reports = [];
@@ -126,10 +126,14 @@ legend(pulse_duration_legend);
 
 figure(3);
 hold off;
+power_legend = strings(length(pulse_frequencies_filtered), 1);
 for ii = 1:length(pulse_frequencies_filtered)
     freq = pulse_frequencies_filtered(ii);
     reports = pdw_reports_by_freq{freq};
     power_dB = 10*log10([reports.pulse_power]);
+    mean_power_dB = 10*log10(mean([reports.pulse_power]));
+    power_legend(ii) = sprintf('%0.2f MHz - mean=%0.1f dB', freq, mean_power_dB);
+
     plot([reports.pulse_toa_s], power_dB, '.-');
     hold on;
     %pulse_toa       = [pdw_reports_by_freq{freq}.pulse_toa_us];
@@ -139,7 +143,7 @@ grid on;
 title('Pulse power');
 xlabel('Time (s)');
 ylabel('Power (dB)');
-legend(freq_legend);
+legend(power_legend);
 
 
 ax = zeros(length(pulse_frequencies_filtered), 3);
@@ -214,23 +218,6 @@ for ii = 1:length(pulse_frequencies_filtered)
     
     cluster_threshold = pri_cluster_min_pulses * length(pulse_toa_filt);
     
-    fprintf('PRI clustering, freq=%0.2f:\n', freq);
-    for jj = 1:pri_num_clusters
-        if cluster_count(jj) > pri_cluster_min_pulses * length(pulse_toa_filt)
-            valid_str = 'valid';
-        else
-            valid_str = '';
-        end
-        fprintf('  %2d: median:%8.2f  N:%5d %s\n', jj, cluster_median(jj), cluster_count(jj), valid_str);
-    end 
-
-    fprintf('PRI clustering, freq=%0.2f:\n', freq);
-    for jj = 1:pri_num_clusters
-        if cluster_count(jj) > pri_cluster_min_pulses * length(pulse_toa_filt)
-            fprintf('  %2d: median:%8.2f  N:%5d\n', jj, cluster_median(jj), cluster_count(jj));
-        end
-    end     
-
     if freq == pri_analysis_freq
         figure(9);  
         ax1 = subplot(2,1,1);
@@ -288,19 +275,24 @@ title(sprintf('PRI raster: freq=%0.2f period=%0.2f us', pri_analysis_freq, pri_r
 
 
 %%
-return 
+figs_to_save = [1, 2, 3, 5, 10, 11];
+for ii = 1:length(figs_to_save)
+    fig_index = figs_to_save(ii);
+    f = figure(fig_index);
+    f.Position = [1400 100 800 500];
+end
+
 disp('Pausing for figure adjustments');
 pause();
 
 %% 
-figs_to_save = [1, 2, 3, 4, 5, 9, 10, 11];
+
 split_fn = split(filename, '.');
 filename_base = split_fn{1};
 
 for ii = 1:length(figs_to_save)
     fig_index = figs_to_save(ii);
     f = figure(fig_index);
-    f.Position = [1400 100 800 500];
     
     fig_filename = sprintf('%s_fig_%d.png', filename_base, fig_index);
     saveas(f, fig_filename);
