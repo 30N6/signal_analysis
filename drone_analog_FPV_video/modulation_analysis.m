@@ -6,7 +6,7 @@ reports = reports(([reports.buffered_frame_valid] == 1));
 
 %plot([matching_pdws.pulse_toa_s], 10*log10([matching_pdws.implied_pulse_snr]), [matching_pdws.pulse_toa_s], 10*log10([matching_pdws.recorded_pulse_snr]), [matching_pdws.pulse_toa_s], 10*log10([matching_pdws.pulse_power]));
 
-pdw_desc = {"SNR > 12.0 dB"; "SNR < 10.0 dB"};
+pdw_desc = {"SNR > 12.0 dB"; "SNR < 12.0 dB"};
 pdws_by_snr = {reports(10*log10([reports.pulse_power]) < 30.0); reports(10*log10([reports.pulse_power]) < 15.0)};
 
 num_subplots = 4;
