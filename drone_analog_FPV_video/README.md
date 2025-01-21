@@ -6,7 +6,7 @@ This report presents a brief look at the NTSC video signal, commonly used on FPV
 
 Although the NTSC waveform is complex and not particularly well-suited for a pulse-domain analysis (unlike, say, a radar), it does feature some periodic AM characteristics which allow a pulse-oriented ESM receiver to receive it as such. In particular, the fixed 29.97 fps frame rate together with the repeating 525 scan line/frame pattern provides a relatively stable PRI pattern among the detected pulses, and pluto_esm can effectively discriminate it in a noisy environment even with short dwells.
 
-<img src="Screenshot 2025-01-18 135055 - FPV video 5917.png" width=50%>
+<img src="Screenshot 2025-01-18 135055 - FPV video 5917.png" width=100%>
 
 ## Setup
 * An inexpensive 5.8 GHZ FPV camera was used to generate the signal, with the power set to 20 mW.
@@ -48,16 +48,16 @@ Pluto_esm is not a calibrated instrument, so it is helpful to compare its perfor
 
 With the FPV camera set to 20 mW and placed 40 ft away in another room, pluto_esm was able to detect and identify the NTSC signal, albeit with a low SNR. At the same time, the spectrum analyzer showed nothing, while the FPV monitor had a good image.
 
-<img src="https://github.com/user-attachments/assets/06701dd0-be4f-48aa-a597-b2b96caf22f2" width=45%>
-<img src="https://github.com/user-attachments/assets/7978fc9a-2960-425e-994b-e9832fb3aa7f" width=45%>
+<img src="Screenshot 2025-01-18 143408- FPV video 5917 - PRI-based detection.png" width=100%>
+<img src="fpv_tinysa_low_snr.png" width=100%>
 <br><br>
 
 Moving the camera closer (8 ft) to the pluto_esm antenna produces an extremely high SNR and detections spilling over into additional frequency bins.  At such close range, the TinySA can discern the structure of the signal in spectrum/waterfall mode, but zero span mode remains useless (swamped with WiFi, etc).
 <br>
-<img src="https://github.com/user-attachments/assets/8b0eff8c-d231-4ca0-8127-ed8c4f545553" width=45%>
+<img src="pluto_esm_fpv_high_snr.png" width=100%>
 <br>
-<img src="https://github.com/user-attachments/assets/078538c9-ccef-49a1-abf2-902c89ebc9c4" width=45%>
-<img src="https://github.com/user-attachments/assets/008f8ad4-5d5c-410d-ba81-6c73e486cdee" width=45%>
+<img src="fpv_tinysa_high_snr_wide.png" width=100%>
+<img src="fpv_tinysa_high_snr_narrow.png" width=100%>
 
 
 
