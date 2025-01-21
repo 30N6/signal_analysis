@@ -1,9 +1,5 @@
 # Analog FPV drone video (NTSC): pluto_esm collection and analysis
-<img src="https://github.com/user-attachments/assets/71724dc5-f3eb-4f7b-ba00-46dd7bb825bc" width=20%>
-
-<img src="https://github.com/user-attachments/assets/6173134b-550b-4f20-bed6-bb3213df2b7f" width=20%>
-<img src="https://github.com/user-attachments/assets/0ff5af5a-fadf-48ee-a5e9-540346ccfb84" width=20%>
-<img src="https://github.com/user-attachments/assets/5ea475b8-3a45-4a3c-bedc-c3a291278b7d" width=20%>
+<img src="FPV_banner.png" width=100%>
 
 ## Introduction
 This report presents a brief look at the NTSC video signal, commonly used on FPV drones, collected with the pluto_esm system (https://github.com/30N6/sw/wiki/Pluto_esm).
