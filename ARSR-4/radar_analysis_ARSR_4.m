@@ -1,5 +1,6 @@
 filename = 'analysis-20241218-155827-ARSR-4.log'; pri_raster_period_us = 41666.954;
 %filename = 'analysis-20241219-202323-ARSR-4.log'; pri_raster_period_us = 41666.994;
+filename = 'analysis-20250103-213928.log';
 
 toa_scale_factor_s          = 1/(4*61.44e6);
 pd_scale_factor_us          = 1/1.92;
