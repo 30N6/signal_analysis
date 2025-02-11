@@ -1,10 +1,10 @@
-# Analog FPV drone video (NTSC): pluto_esm collection and analysis
+# Analog FPV drone video (CVBS-FM/NTSC): pluto_esm collection and analysis
 <img src="./images/FPV_banner.png" width=100%>
 
 ## Introduction
-This report presents a brief look at the NTSC video signal, commonly used on FPV drones, collected with the pluto_esm system (https://github.com/30N6/sw/wiki/Pluto_esm).
+This report presents a brief look at the frequency modulated CVBS/NTSC video signal, commonly used on FPV drones, collected with the pluto_esm system (https://github.com/30N6/sw/wiki/Pluto_esm).
 
-Although the NTSC waveform is complex and not particularly well-suited for a pulse-domain analysis (unlike, say, a radar), it does feature some periodic AM characteristics which allow a pulse-oriented ESM receiver to receive it as such. In particular, the fixed 29.97 fps frame rate together with the repeating 525 scan line/frame pattern provides a relatively stable PRI pattern among the detected pulses, and pluto_esm can effectively discriminate it in a noisy environment even with short dwells.
+Although the NTSC waveform is complex and not particularly well-suited for a pulse-domain analysis (unlike, say, a radar), after passing through a narrow filter, it does feature some periodic AM characteristics which allow a pulse-oriented ESM receiver to receive it as such. In particular, the fixed 29.97 fps frame rate together with the repeating 525 scan line/frame pattern provides a relatively stable PRI pattern among the detected pulses, and pluto_esm can effectively discriminate it in a noisy environment even with short dwells.
 
 <img src="./images/Screenshot 2025-01-18 135055 - FPV video 5917.png" width=100%>
 
