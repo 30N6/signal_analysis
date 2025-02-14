@@ -12,7 +12,7 @@
 <img src="https://github.com/user-attachments/assets/36416070-2957-44a5-a75b-3e01404b18e7" width=20%>
 <img src="https://github.com/user-attachments/assets/8abfb872-37f5-4b53-b608-e43339b2056d" width=20%>
 
-# [(3) Analog FPV drone video (NTSC): pluto_esm collection and analysis](./drone_analog_FPV_video/)
+# [(3) Analog FPV drone video (CVBS-FM/NTSC): pluto_esm collection and analysis](./drone_analog_FPV_video/)
 <img src="./drone_analog_FPV_video/images/FPV_banner.png" width=100%>
 
 ***
