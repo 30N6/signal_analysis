@@ -1,3 +1,4 @@
+%unzip data before running
 %filename = "analysis-20250208-000007-F1000.log";
 %filename = "analysis-20250208-000110-F500.log";
 %filename = "analysis-20250208-000211-D500.log";
@@ -11,6 +12,9 @@ filename = "analysis-20250208-000401-500Hz.log";
 
 %filename = "analysis-20250208-005119.log"; %background
 %filename = "analysis-20250208-105833-F1000-10mW.log";
+
+%filename = "analysis-20250210-215705-500Hz-slow.log";
+%filename = "analysis-20250211-180539-lora-wild.log";
 
 Fs = 7.68e6;
 dt = 1/Fs;
@@ -53,7 +57,14 @@ if reload
 
         scan_reports(ii).iq_phase = unwrap(atan2(imag(scan_reports(ii).iq_data), real(scan_reports(ii).iq_data)));
         scan_reports(ii).iq_freq = (1/(2*pi)) * diff(scan_reports(ii).iq_phase) / dt;        
-        scan_reports(ii).timestamp_sec = scan_reports(ii).timestamp * (1/(4*61.44e6));
+
+        if isfield(scan_reports(ii), "hw_timestamp")
+            scan_reports(ii).timestamp_sec = scan_reports(ii).hw_timestamp * (1/(4*61.44e6));
+            scan_reports(ii).timestamp = scan_reports(ii).hw_timestamp;
+        else
+            scan_reports(ii).timestamp_sec = scan_reports(ii).timestamp * (1/(4*61.44e6));
+        end
+        scan_reports(ii).iq_length = length(scan_reports(ii).iq_data);
 
         if length(scan_reports(ii).iq_freq) < 50
             scan_reports(ii).r_squared_fsk_min = 0;
@@ -98,7 +109,7 @@ end
 
 
 
-filter_freq = 2475;
+filter_freq = 2425;
 
 is_tx_listen = false(length(scan_reports), 1);
 for ii = 1:length(scan_reports)
@@ -124,7 +135,7 @@ plot([filtered_reports.lora_mean_slope] * (1/(1e3/1e-6)), 'o');
 
 %%
 offset = 0;
-num_rows = 6;
+num_rows = 4;
 num_cols = 6;
 
 figure(2);
@@ -184,7 +195,7 @@ end
 
 
 %%
-d = filtered_reports(2);
+d = filtered_reports(14);
 
 rows = 6;
 
@@ -261,7 +272,7 @@ fprintf("corr ratio: %f\n", s_xc/m_xc);
 
 %%
 
-d = filtered_reports(8);
+d = filtered_reports(14);
 %d = filtered_reports(10);
 
 t_pad = (0:L-1).' / Fs;

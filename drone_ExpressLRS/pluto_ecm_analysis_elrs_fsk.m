@@ -1,3 +1,4 @@
+%unzip data before running
 %filename = "analysis-20250208-000007-F1000.log";
 %filename = "analysis-20250208-000110-F500.log";
 %filename = "analysis-20250208-000211-D500.log";
@@ -10,9 +11,13 @@
 %filename = "analysis-20250208-000744-50Hz.log";
 
 %filename = "analysis-20250208-005119.log"; %background
-%filename = "analysis-20250208-105833-F1000-10mW.log";
+filename = "analysis-20250208-105833-F1000-10mW.log";
 
-filename = "analysis-20250209-221955.log";
+%filename = "analysis-20250209-221955.log";
+%filename = "analysis-20250210-234636.log"; %flrc false alarm
+%filename = "analysis-20250211-000332-F1000-F500.log";
+%filename = "analysis-20250211-001844-F1000-low-gain.log";
+%filename = "analysis-20250211-163551-background.log";
 
 Fs = 7.68e6;
 dt = 1/Fs;
@@ -66,9 +71,11 @@ if reload
         if isfield(scan_reports(ii), "analysis")
             scan_reports(ii).sw_bfsk_r_squared = scan_reports(ii).analysis.bfsk_r_squared;
             scan_reports(ii).sw_bfsk_len_peak = scan_reports(ii).analysis.bfsk_len_peak;
+            scan_reports(ii).sw_bfsk_freq_spread = scan_reports(ii).analysis.bfsk_freq_spread;
         else
             scan_reports(ii).sw_bfsk_r_squared = 0;
             scan_reports(ii).sw_bfsk_len_peak = 0;
+            scan_reports(ii).sw_bfsk_freq_spread = 0;
         end
         
         if length(scan_reports(ii).iq_freq) < 50
@@ -79,11 +86,12 @@ if reload
             rs = [0, 0];
             [rs(1), ~] = analyze_fsk(scan_reports(ii).iq_freq(1:floor(l_freq/2)), 2, Fs);
             [rs(2), ~] = analyze_fsk(scan_reports(ii).iq_freq(ceil(l_freq/2):end), 2, Fs);
-            [~, fsk_len_hist] = analyze_fsk(scan_reports(ii).iq_freq, 2, Fs);
+            [~, fsk_len_hist, fsk_freq_spread] = analyze_fsk(scan_reports(ii).iq_freq, 2, Fs);
 
             [~, scan_reports(ii).fsk_len_peak] = max(fsk_len_hist);
             scan_reports(ii).r_squared_fsk_min = min(rs);
             scan_reports(ii).r_squared_fsk_max = max(rs);
+            scan_reports(ii).fsk_freq_spread = fsk_freq_spread;
             
             [scan_reports(ii).fft_freq_mean, scan_reports(ii).fft_freq_std] = get_fft_stats(scan_reports(ii).iq_data_padded, Fs);
         end
@@ -119,23 +127,28 @@ for ii = 1:length(scan_reports)
 end
 freq_match      = ([scan_reports.dwell_freq] == filter_freq).';
 length_match    = ([scan_reports.iq_length] > 128).';
-power_match     = ([scan_reports.mean_power_dB] > 10).';
+power_match     = ([scan_reports.mean_power_dB] > -10).';
 timestamp_match = ([scan_reports.timestamp_sec] > 0).' & ([scan_reports.timestamp_sec] < 100).';
-mod_match        = ([scan_reports.sw_bfsk_r_squared] > 0.8).' & ([scan_reports.sw_bfsk_len_peak] > 4).';
+%timestamp_match = ([scan_reports.timestamp_sec] > 27.3679).' & ([scan_reports.timestamp_sec] < 27.368).';
+%mod_match        = ([scan_reports.sw_bfsk_r_squared] > 0.8).' & ([scan_reports.sw_bfsk_len_peak] > 4).';
+mod_match        = ([scan_reports.r_squared_fsk_max] > 0.8).' & ([scan_reports.fsk_len_peak] > 4).'; % & ([scan_reports.fsk_freq_spread] > 400e3).';
+%mod_match         = ones(length(scan_reports), 1);
 filtered_reports = scan_reports(freq_match & length_match & is_tx_listen & power_match & timestamp_match & mod_match);
 
 figure(20);
 subplot(3,1,1);
 %plot([filtered_reports.mean_power_dB]);
 %plot([filtered_reports.timestamp] * (1/(4*61.44e6)), [filtered_reports.mean_power_dB], 'o');
-plot([filtered_reports.mean_power_dB], 'o');
+plot([filtered_reports.timestamp_sec], [filtered_reports.mean_power_dB], 'o');
 subplot(3,1,2);
-plot([filtered_reports.iq_length], [filtered_reports.mean_power_dB], 'o');
+plot([filtered_reports.timestamp_sec], [filtered_reports.r_squared_fsk_max], 'o');
+subplot(3,1,3);
+plot([filtered_reports.timestamp_sec], [filtered_reports.fsk_freq_spread], 'o');
 
 %%
 offset = 0;
-num_rows = 1;
-num_cols = 3;
+num_rows = 4;
+num_cols = 4;
 
 figure(2);
 ax1 = zeros(num_rows, num_cols);

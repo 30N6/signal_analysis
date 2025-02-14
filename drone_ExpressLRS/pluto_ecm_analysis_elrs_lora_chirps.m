@@ -1,3 +1,5 @@
+%unzip data before running
+
 filenames = {"analysis-20250208-000401-500Hz.log", "500Hz";
              "analysis-20250208-000450-333Hz-full.log", "333Hz";
              "analysis-20250208-000540-250Hz.log", "250Hz";
