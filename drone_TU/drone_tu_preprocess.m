@@ -8,31 +8,33 @@ data_path = 'C:/drone_data/Radio-Frequency Control and Video Signal Recordings o
 reload = 0;
 N_filt = 1024;
 t_segment = 250e-6;
+num_segments = 64;
 
-drone_entries = {{'DJI_inspire_2_2G.bin',               2.440e9, 120e6};
-                 {'DJI_inspire_2_5G_1of2.bin',          5.800e9, 200e6};
-                 {'DJI_inspire_2_5G_2of2.bin',          5.800e9, 200e6};
-                 {'DJI_matrice_100_2G.bin',             2.440e9, 120e6};
-                 {'DJI_matrice_210_2G.bin',             2.440e9, 120e6};
-                 {'DJI_matrice_210_5G_2of2.bin',        5.800e9, 200e6};
-                 {'DJI_mavic_mini_2G.bin',              2.440e9, 120e6};
-                 {'DJI_mavic_pro_2G.bin',               2.440e9, 120e6};
-                 {'DJI_phantom_4_2G.bin',               2.440e9, 120e6};
-                 {'DJI_phantom_4_pro_plus_2G.bin',      2.440e9, 120e6};
-                 {'DJI_phantom_4_pro_plus_5G_1of2.bin', 5.800e9, 200e6};
-                 {'DJI_phantom_4_pro_plus_5G_2of2.bin', 5.800e9, 200e6};
-                 {'Parrot_disco_2G.bin',                2.440e9, 120e6};
-                 {'Parrot_mambo_control_2G.bin',        2.440e9, 120e6};
-                 {'Parrot_mambo_video_2G.bin',          2.440e9, 120e6};
-                 {'Yuneec_typhoon_h_2G_1of2.bin',       2.440e9, 120e6};
-                 {'Yuneec_typhoon_h_2G_2of2.bin',       2.440e9, 120e6};
-                 {'Yuneec_typhoon_h_5G.bin',            5.700e9, 200e6};
+drone_entries = {{'DJI_inspire_2_2G.bin',               2.440e9, 120e6, 0.1};
+                 {'DJI_inspire_2_5G_1of2.bin',          5.800e9, 200e6, 0.1};
+                 {'DJI_inspire_2_5G_2of2.bin',          5.800e9, 200e6, 0.1};
+                 {'DJI_matrice_100_2G.bin',             2.440e9, 120e6, 0.1};
+                 {'DJI_matrice_210_2G.bin',             2.440e9, 120e6, 0.001};
+                 {'DJI_matrice_210_5G_2of2.bin',        5.800e9, 200e6, 0.01};
+                 {'DJI_mavic_mini_2G.bin',              2.440e9, 120e6, 0.1};
+                 {'DJI_mavic_pro_2G.bin',               2.440e9, 120e6, 0.1};
+                 {'DJI_phantom_4_2G.bin',               2.440e9, 120e6, 0.1};
+                 {'DJI_phantom_4_pro_plus_2G.bin',      2.440e9, 120e6, 0.1};
+                 {'DJI_phantom_4_pro_plus_5G_1of2.bin', 5.800e9, 200e6, 0.1};
+                 {'DJI_phantom_4_pro_plus_5G_2of2.bin', 5.800e9, 200e6, 0.1};
+                 {'Parrot_disco_2G.bin',                2.440e9, 120e6, 0.1};
+                 {'Parrot_mambo_control_2G.bin',        2.440e9, 120e6, 0.1};
+                 {'Parrot_mambo_video_2G.bin',          2.440e9, 120e6, 0.1};
+                 {'Yuneec_typhoon_h_2G_1of2.bin',       2.440e9, 120e6, 0.1};
+                 {'Yuneec_typhoon_h_2G_2of2.bin',       2.440e9, 120e6, 0.1};
+                 {'Yuneec_typhoon_h_5G.bin',            5.700e9, 200e6, 0.1};
                 };
 
 for i_entry = 1:length(drone_entries)
     filename = drone_entries{i_entry}{1};
     input_f0 = drone_entries{i_entry}{2};
     input_fs = drone_entries{i_entry}{3};
+    input_threshold = drone_entries{i_entry}{4};
     
     fprintf("Loading %s\n", filename);
 
@@ -47,22 +49,27 @@ for i_entry = 1:length(drone_entries)
     
     iq_power_avg = filter(ones([N_filt,1])/N_filt, 1, iq_power);
     
-    iq_power_thresh = iq_power_avg > 0.25 * mean(iq_power);
-    d_pt = diff(iq_power_thresh);
+    iq_power_thresh = iq_power_avg > input_threshold;
+    d_pt = diff(iq_power_thresh) > 0;
     d_pt_i = find(d_pt);
     d_pt_i = d_pt_i(2:end) - N_filt/2;
-    
-    t_dpt = t(d_pt_i);
 
-    
-    output_len = min(128, length(d_pt_i) - 2);
+    output_len = min(num_segments, length(d_pt_i) - 2);
     iq_data_m = zeros([N_segment, output_len]);
     
     for ii = 1:output_len
         i_segment = d_pt_i(ii);
         iq_data_m(:, ii) = iq_data(i_segment:(i_segment + N_segment - 1));
     end
-    
+
+    t_dpt = t(d_pt_i(1:output_len));
+    y_dpt = ones([output_len, 1]);
+    t_slice = t(1:d_pt_i(output_len));
+    y_slice = iq_data(1:d_pt_i(output_len));
+    p_slice = iq_power_avg(1:d_pt_i(output_len));
+    figure(1);
+    plot(t_slice, real(y_slice), t_slice, imag(y_slice), t_slice, p_slice, t_dpt, y_dpt, 'o');
+
     split_filename = split(filename, ".");
     output_filename = sprintf("./data/drone_tu_preprocessed_%s.mat", split_filename{1});
 
