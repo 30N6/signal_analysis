@@ -1,10 +1,7 @@
-filename = 'analysis-20241218-155827-ARSR-4.log'; pri_raster_period_us = 41666.954;
-%filename = 'analysis-20241219-202323-ARSR-4.log'; pri_raster_period_us = 41666.994;
-%filename = 'analysis-20250103-213928.log';
-filename = 'analysis-20250914-162232.log';
+filename = 'analysis-full-20250914-220752.log'; pri_raster_period_us = 41666.954;
 
 toa_scale_factor_s          = 1/(4*61.44e6);
-pd_scale_factor_us          = 1/1.92;
+pd_scale_factor_us          = 1/61.44;
 channel_spacing             = 0.96;
 min_pulses_per_freq         = 100;
 max_toa_diff_levels         = 12;
@@ -17,7 +14,7 @@ pri_raster_offset_us        = 1000;
 pri_raster_num_clusters     = 12;
 pri_cluster_min_pulses      = 0.05;
 
-pri_analysis_freq           = 1336.32;
+pri_analysis_freq           = 1344.0;
 
 reload = 1;
 if reload
@@ -32,12 +29,13 @@ if reload
     
         decoded_line = jsondecode(lines(ii));
         report = decoded_line.data;
-        if ~isfield(report, 'pulse_seq_num')
+        if ~isfield(report, 'pdw_pulse_report')
             continue;
         end    
+        report = report.pdw_pulse_report;
         
         if ~report.buffered_frame_valid
-            report.buffered_frame_data = zeros([50, 2]);
+            report.buffered_frame_data = zeros([320, 2]);
         end
 
         if ~init_done
@@ -60,19 +58,19 @@ if reload
         pdw_reports(ii).recorded_power          = abs(pdw_reports(ii).recorded_iq_data) .^ 2;
         pdw_reports(ii).recorded_noise_power    = mean(pdw_reports(ii).recorded_power(1:8));
     
-        iq_length = min(50 - 8, pdw_reports(ii).pulse_duration);
+        iq_length = min(320 - 8, pdw_reports(ii).pulse_duration);
         pdw_reports(ii).recorded_pulse_power    = mean(pdw_reports(ii).recorded_power(9:(9 + iq_length - 1)));
         pdw_reports(ii).recorded_pulse_snr      = pdw_reports(ii).recorded_pulse_power / max(pdw_reports(ii).recorded_noise_power, 1);
         pdw_reports(ii).pulse_power             = pdw_reports(ii).pulse_power_accum / pdw_reports(ii).pulse_duration;
         pdw_reports(ii).implied_pulse_snr       = pdw_reports(ii).pulse_power / pdw_reports(ii).pulse_threshold;
     end
     
-    pulse_frequencies = sort(unique([pdw_reports.channel_frequency]));
+    pulse_frequencies = sort(unique([pdw_reports.dwell_frequency]));
     
     pdw_reports_by_freq = dictionary;
     for ii = 1:length(pulse_frequencies)
         freq = pulse_frequencies(ii);
-        valid_reports = ([pdw_reports.channel_frequency] == freq);  % & ([pdw_reports.pulse_duration_us] > 5);
+        valid_reports = ([pdw_reports.dwell_frequency] == freq);  % & ([pdw_reports.pulse_duration_us] > 5);
         if sum(valid_reports) < min_pulses_per_freq
             continue
         end
@@ -80,7 +78,7 @@ if reload
     end
     
     pulse_frequencies_filtered = pdw_reports_by_freq.keys;
-    pdw_reports_filtered = pdw_reports(ismember([pdw_reports.channel_frequency], pulse_frequencies_filtered));
+    pdw_reports_filtered = pdw_reports(ismember([pdw_reports.dwell_frequency], pulse_frequencies_filtered));
 end
 
 freq_legend = strings(length(pulse_frequencies_filtered), 1);
@@ -92,7 +90,7 @@ end
 freq_hist_bins = min(pulse_frequencies) : channel_spacing : (max(pulse_frequencies) + channel_spacing);
 
 figure(1);
-histogram([pdw_reports.channel_frequency], freq_hist_bins);
+histogram([pdw_reports.dwell_frequency], freq_hist_bins);
 grid on;
 title('Pulse frequency');
 xlabel('Frequency (MHz)');
